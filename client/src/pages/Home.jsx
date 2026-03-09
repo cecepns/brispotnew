@@ -6,7 +6,7 @@ const menuItems = [
   { to: '/input-data-pengajuan', label: 'Input Data Pengajuan', icon: FileInput },
   { to: '/list-data-pengajuan', label: 'List Data Pengajuan', icon: List },
   { to: '/akad-dan-pencairan', label: 'Akad dan Pencairan Dana', icon: FileSignature },
-  { to: '/admin', label: 'Admin Pengajuan', icon: ShieldCheck },
+  // { to: '/admin', label: 'Admin Pengajuan', icon: ShieldCheck },
 ];
 
 export default function Home() {

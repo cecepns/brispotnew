@@ -45,7 +45,7 @@ export default function Prakarsa() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Header title="Prakarsa" showBack backTo="/list-data-pengajuan" />
-      <main className="max-w-md m-4 px-4 py-6 bg-white border border-gray-200 rounded-lg">
+      <main className="max-w-md m-4 md:mx-auto px-4 py-6 bg-white border border-gray-200 rounded-lg">
         <div className="flex gap-4 items-start mb-6">
           <div className="flex-shrink-0">
             {data.foto_selfie_path ? (

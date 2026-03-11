@@ -80,7 +80,7 @@ export default function InputDataPengajuan() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Header title={editId ? 'Edit Data Pengajuan' : 'Input Data Pengajuan'} showBack backTo={editId ? '/list-data-pengajuan' : '/'} />
-      <main className="max-w-md m-4 px-4 py-6 bg-white border border-gray-200 rounded-lg">
+      <main className="max-w-md m-4 md:mx-auto px-4 py-6 bg-white border border-gray-200 rounded-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Upload Foto Selfie</label>

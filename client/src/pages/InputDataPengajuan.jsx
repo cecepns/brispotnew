@@ -78,9 +78,9 @@ export default function InputDataPengajuan() {
   if (loadData) return <div className="min-h-screen bg-white flex items-center justify-center">Memuat...</div>;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50">
       <Header title={editId ? 'Edit Data Pengajuan' : 'Input Data Pengajuan'} showBack backTo={editId ? '/list-data-pengajuan' : '/'} />
-      <main className="max-w-md mx-auto px-4 py-6">
+      <main className="max-w-md m-4 px-4 py-6 bg-white border border-gray-200 rounded-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Upload Foto Selfie</label>

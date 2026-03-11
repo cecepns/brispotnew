@@ -14,11 +14,11 @@ export default function ListDataPengajuan() {
       .catch(() => setError('Gagal memuat data'))
       .finally(() => setLoading(false));
   }, []);
-
+  
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50">
       <Header title="List Data Pengajuan" showBack backTo="/" />
-      <main className="max-w-md mx-auto px-4 py-4">
+      <main className="max-w-md m-4 px-4 py-6 bg-white border border-gray-200 rounded-lg">
         <p className="text-gray-500 uppercase text-sm font-medium mb-4">Identitas</p>
         {loading && <p className="text-gray-600">Memuat...</p>}
         {error && <p className="text-red-600">{error}</p>}

@@ -10,7 +10,10 @@ export default function ListDataPengajuan() {
 
   useEffect(() => {
     getPengajuanList()
-      .then(setList)
+      .then((data) => {
+        const items = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+        setList(items);
+      })
       .catch(() => setError('Gagal memuat data'))
       .finally(() => setLoading(false));
   }, []);
@@ -22,11 +25,11 @@ export default function ListDataPengajuan() {
         <p className="text-gray-500 uppercase text-sm font-medium mb-4">Identitas</p>
         {loading && <p className="text-gray-600">Memuat...</p>}
         {error && <p className="text-red-600">{error}</p>}
-        {!loading && !error && list.length === 0 && (
+        {!loading && !error && (!Array.isArray(list) || list.length === 0) && (
           <p className="text-gray-600">Belum ada data pengajuan.</p>
         )}
         <ul className="divide-y divide-gray-200">
-          {list.map((item) => (
+          {Array.isArray(list) && list.map((item) => (
             <li key={item.id} className="py-4 flex items-center gap-3">
               <div className="flex-shrink-0">
                 {item.foto_selfie_path ? (

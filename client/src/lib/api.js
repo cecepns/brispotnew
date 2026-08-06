@@ -3,7 +3,13 @@ const BASE = import.meta.env.VITE_API_URL || 'https://api.kingcreativestudio.my.
 export async function getPengajuanList() {
   const res = await fetch(`${BASE}/pengajuan`);
   if (!res.ok) throw new Error('Gagal mengambil data');
-  return res.json();
+  const data = await res.json();
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.pengajuan)) return data.pengajuan;
+  if (Array.isArray(data?.rows)) return data.rows;
+  if (Array.isArray(data?.result)) return data.result;
+  return [];
 }
 
 export async function getPengajuanById(id) {

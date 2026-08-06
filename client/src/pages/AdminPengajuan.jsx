@@ -25,7 +25,10 @@ export default function AdminPengajuan() {
   const fetchData = () => {
     setLoading(true);
     getPengajuanList()
-      .then(setList)
+      .then((data) => {
+        const items = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+        setList(items);
+      })
       .catch(() => setError('Gagal memuat data'))
       .finally(() => setLoading(false));
   };
@@ -36,7 +39,7 @@ export default function AdminPengajuan() {
     setActionLoading(id);
     try {
       await updateProsesStatus(id, newStatus);
-      setList((prev) => prev.map((item) => (item.id === id ? { ...item, proses_status: newStatus } : item)));
+      setList((prev) => (Array.isArray(prev) ? prev.map((item) => (item.id === id ? { ...item, proses_status: newStatus } : item)) : []));
     } catch {
       alert('Gagal mengubah status');
     } finally {
@@ -48,7 +51,7 @@ export default function AdminPengajuan() {
     setActionLoading(id);
     try {
       await deletePengajuan(id);
-      setList((prev) => prev.filter((item) => item.id !== id));
+      setList((prev) => (Array.isArray(prev) ? prev.filter((item) => item.id !== id) : []));
       setDeleteConfirm(null);
     } catch {
       alert('Gagal menghapus data');
@@ -63,18 +66,18 @@ export default function AdminPengajuan() {
       <main className="max-w-md mx-auto px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <p className="text-gray-500 uppercase text-sm font-medium">
-            Total: {list.length} data
+            Total: {Array.isArray(list) ? list.length : 0} data
           </p>
         </div>
 
         {loading && <p className="text-gray-600 text-center py-8">Memuat...</p>}
         {error && <p className="text-red-600 text-center py-8">{error}</p>}
-        {!loading && !error && list.length === 0 && (
+        {!loading && !error && (!Array.isArray(list) || list.length === 0) && (
           <p className="text-gray-600 text-center py-8">Belum ada data pengajuan.</p>
         )}
 
         <ul className="space-y-3">
-          {list.map((item) => {
+          {Array.isArray(list) && list.map((item) => {
             const status = item.proses_status || 'pending';
             const isDeleting = deleteConfirm === item.id;
 

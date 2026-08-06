@@ -1,15 +1,34 @@
 const BASE = import.meta.env.VITE_API_URL || 'https://api.kingcreativestudio.my.id/brispot/api';
 
-export async function getPengajuanList() {
-  const res = await fetch(`${BASE}/pengajuan`);
+export async function getPengajuanList(page = 1, pageSize = 10) {
+  const query = new URLSearchParams({ page, pageSize }).toString();
+  const res = await fetch(`${BASE}/pengajuan?${query}`);
   if (!res.ok) throw new Error('Gagal mengambil data');
-  const data = await res.json();
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.pengajuan)) return data.pengajuan;
-  if (Array.isArray(data?.rows)) return data.rows;
-  if (Array.isArray(data?.result)) return data.result;
-  return [];
+  const resData = await res.json();
+
+  if (resData && typeof resData === 'object' && !Array.isArray(resData)) {
+    const data = Array.isArray(resData.data)
+      ? resData.data
+      : (Array.isArray(resData.pengajuan) ? resData.pengajuan : (Array.isArray(resData.rows) ? resData.rows : []));
+
+    const meta = resData.meta || {
+      total: data.length,
+      page: Number(page),
+      pageSize: Number(pageSize),
+    };
+
+    return { data, meta };
+  }
+
+  const data = Array.isArray(resData) ? resData : [];
+  return {
+    data,
+    meta: {
+      total: data.length,
+      page: Number(page),
+      pageSize: Number(pageSize),
+    },
+  };
 }
 
 export async function getPengajuanById(id) {

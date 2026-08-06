@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Header } from '../components/Header';
+import { Pagination } from '../components/Pagination';
 import { getPengajuanList, updateProsesStatus, deletePengajuan, uploadsUrl } from '../lib/api';
 import { Trash2, ChevronDown } from 'lucide-react';
 
@@ -21,19 +22,26 @@ export default function AdminPengajuan() {
   const [error, setError] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
+  const [page, setPage] = useState(1);
+  const [meta, setMeta] = useState({ total: 0, page: 1, pageSize: 10 });
 
-  const fetchData = () => {
+  const fetchData = (currentPage = page) => {
     setLoading(true);
-    getPengajuanList()
-      .then((data) => {
-        const items = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
-        setList(items);
+    setError('');
+    getPengajuanList(currentPage, 10)
+      .then((res) => {
+        setList(res.data || []);
+        if (res.meta) {
+          setMeta(res.meta);
+        }
       })
       .catch(() => setError('Gagal memuat data'))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData(page);
+  }, [page]);
 
   const handleStatusChange = async (id, newStatus) => {
     setActionLoading(id);
@@ -51,8 +59,13 @@ export default function AdminPengajuan() {
     setActionLoading(id);
     try {
       await deletePengajuan(id);
-      setList((prev) => (Array.isArray(prev) ? prev.filter((item) => item.id !== id) : []));
       setDeleteConfirm(null);
+      // Refresh list for current page
+      if (list.length === 1 && page > 1) {
+        setPage(page - 1);
+      } else {
+        fetchData(page);
+      }
     } catch {
       alert('Gagal menghapus data');
     } finally {
@@ -60,13 +73,15 @@ export default function AdminPengajuan() {
     }
   };
 
+  const totalPages = Math.ceil((meta.total || 0) / (meta.pageSize || 10));
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header title="Admin Pengajuan" showBack backTo="/" />
       <main className="max-w-md mx-auto px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <p className="text-gray-500 uppercase text-sm font-medium">
-            Total: {Array.isArray(list) ? list.length : 0} data
+            Total: {meta.total || 0} data
           </p>
         </div>
 
@@ -78,17 +93,18 @@ export default function AdminPengajuan() {
 
         <ul className="space-y-3">
           {Array.isArray(list) && list.map((item) => {
-            const status = item.proses_status || 'pending';
+            const status = item.proses_status || item.status?.toLowerCase() || 'pending';
             const isDeleting = deleteConfirm === item.id;
+            const photoUrl = item.foto_path || item.foto_selfie_path;
 
             return (
               <li key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="flex-shrink-0">
-                      {item.foto_selfie_path ? (
+                      {photoUrl ? (
                         <img
-                          src={uploadsUrl(item.foto_selfie_path)}
+                          src={uploadsUrl(photoUrl)}
                           alt={item.nama}
                           className="w-12 h-12 rounded-full object-cover border border-gray-200"
                         />
@@ -101,7 +117,9 @@ export default function AdminPengajuan() {
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-gray-900 uppercase truncate text-sm">{item.nama}</p>
                       <p className="text-gray-500 text-xs">NIK: {item.nik}</p>
-                      <p className="text-gray-500 text-xs">{formatRupiah(item.plafond)} &middot; {item.tenor || '-'} bln</p>
+                      <p className="text-gray-500 text-xs">
+                        {formatRupiah(item.nominal_pengajuan || item.plafond)} &middot; {item.jangka_waktu || item.tenor || '-'} bln
+                      </p>
                     </div>
                   </div>
 
@@ -111,7 +129,7 @@ export default function AdminPengajuan() {
                         value={status}
                         onChange={(e) => handleStatusChange(item.id, e.target.value)}
                         disabled={actionLoading === item.id}
-                        className={`w-full appearance-none text-xs font-bold px-3 py-2 pr-8 rounded-lg border cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2A4B8F] ${STATUS_COLORS[status]}`}
+                        className={`w-full appearance-none text-xs font-bold px-3 py-2 pr-8 rounded-lg border cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2A4B8F] ${STATUS_COLORS[status] || STATUS_COLORS.proses}`}
                       >
                         {STATUS_OPTIONS.map((opt) => (
                           <option key={opt} value={opt}>
@@ -161,6 +179,16 @@ export default function AdminPengajuan() {
             );
           })}
         </ul>
+
+        {!loading && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={meta.total}
+            pageSize={meta.pageSize}
+            onPageChange={(newPage) => setPage(newPage)}
+          />
+        )}
       </main>
     </div>
   );

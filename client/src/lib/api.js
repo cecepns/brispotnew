@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL || 'https://api-inventory.isavralabel.com/brispotnew/api';
+const BASE = import.meta.env.VITE_API_URL || 'https://api.kingcreativestudio.my.id/brispot/api';
 
 export async function getPengajuanList() {
   const res = await fetch(`${BASE}/pengajuan`);
@@ -54,6 +54,6 @@ export async function deletePengajuan(id) {
 
 export function uploadsUrl(path) {
   if (!path) return null;
-  const base = import.meta.env.VITE_API_URL || 'https://api-inventory.isavralabel.com/brispotnew';
+  const base = import.meta.env.VITE_API_URL || 'https://api.kingcreativestudio.my.id/brispot';
   return path.startsWith('http') ? path : `${base}${path}`;
 }

@@ -48,9 +48,9 @@ export default function Prakarsa() {
       <main className="max-w-md m-4 md:mx-auto px-4 py-6 bg-white border border-gray-200 rounded-lg">
         <div className="flex gap-4 items-start mb-6">
           <div className="flex-shrink-0">
-            {data.foto_selfie_path ? (
+            {data.foto_selfie_path || data.foto_path ? (
               <img
-                src={uploadsUrl(data.foto_selfie_path)}
+                src={uploadsUrl(data.foto_selfie_path || data.foto_path)}
                 alt="Foto"
                 className="w-20 h-20 rounded-full object-cover border-2 border-[#2A4B8F]"
               />
@@ -74,7 +74,7 @@ export default function Prakarsa() {
           </div>
         </div>
 
-               <div className="space-y-3 text-gray-900 mb-3">
+        <div className="space-y-3 text-gray-900 mb-3">
           <div>
             <p className="font-bold">Nama:</p>
             <p className="text-gray-700">{data.nama || '-'}</p>
@@ -89,11 +89,11 @@ export default function Prakarsa() {
           </div>
           <div>
             <p className="font-bold">Plafond:</p>
-            <p className="text-gray-700">{formatRupiah(data.plafond)}</p>
+            <p className="text-gray-700">{formatRupiah(data.plafond ?? data.nominal_pengajuan)}</p>
           </div>
           <div>
             <p className="font-bold">Tenor:</p>
-            <p className="text-gray-700">{data.tenor ? `${data.tenor} Bulan` : '-'}</p>
+            <p className="text-gray-700">{data.tenor || data.jangka_waktu ? `${data.tenor || data.jangka_waktu} Bulan` : '-'}</p>
           </div>
           <div>
             <p className="font-bold">Angsuran:</p>
@@ -101,7 +101,7 @@ export default function Prakarsa() {
           </div>
           <div>
             <p className="font-bold">No HP:</p>
-            <p className="text-gray-700">{data.no_hp || '-'}</p>
+            <p className="text-gray-700">{data.no_hp || data.nomor_hp || '-'}</p>
           </div>
           <div>
             <p className="font-bold">Alamat:</p>
@@ -109,11 +109,11 @@ export default function Prakarsa() {
           </div>
           <div>
             <p className="font-bold">Tempat Tgl Lahir:</p>
-            <p className="text-gray-700">{data.tempat_tgl_lahir || '-'}</p>
+            <p className="text-gray-700">{data.tempat_tgl_lahir || data.ttl || '-'}</p>
           </div>
           <div>
             <p className="font-bold">Suku Bunga Annuitas:</p>
-            <p className="text-gray-700">{data.suku_bunga_annuitas != null ? `${data.suku_bunga_annuitas}%` : '-'}</p>
+            <p className="text-gray-700">{data.suku_bunga_annuitas != null || data.bunga != null ? `${data.suku_bunga_annuitas ?? data.bunga}%` : '-'}</p>
           </div>
           <div>
             <p className="font-bold">Status:</p>

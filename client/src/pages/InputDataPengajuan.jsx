@@ -33,13 +33,25 @@ export default function InputDataPengajuan() {
   useEffect(() => {
     if (!editId) return;
     getPengajuanById(editId)
-      .then((d) => {
-        setForm(
-          Object.fromEntries(
-            fields.map((f) => [f.key, d[f.key] != null ? String(d[f.key]) : ''])
-          )
-        );
-        if (d.foto_selfie_path) setPreview(uploadsUrl(d.foto_selfie_path));
+      .then((res) => {
+        const d = res?.data || res || {};
+        setForm({
+          nama: d.nama != null ? String(d.nama) : '',
+          nik: d.nik != null ? String(d.nik) : '',
+          npwp: d.npwp != null ? String(d.npwp) : '',
+          tempat_tgl_lahir: d.tempat_tgl_lahir ?? d.ttl ?? '',
+          pekerjaan: d.pekerjaan != null ? String(d.pekerjaan) : '',
+          jenis_kelamin: d.jenis_kelamin != null ? String(d.jenis_kelamin) : '',
+          plafond: d.plafond ?? d.nominal_pengajuan ?? '',
+          tenor: d.tenor ?? d.jangka_waktu ?? '',
+          angsuran: d.angsuran != null ? String(d.angsuran) : '',
+          suku_bunga_annuitas: d.suku_bunga_annuitas ?? d.bunga ?? '',
+          no_hp: d.no_hp ?? d.nomor_hp ?? d.nomor_telepon ?? '',
+          alamat: d.alamat != null ? String(d.alamat) : '',
+          status: d.status != null ? String(d.status) : '',
+        });
+        const photo = d.foto_selfie_path || d.foto_path;
+        if (photo) setPreview(uploadsUrl(photo));
       })
       .catch(() => setError('Data tidak ditemukan'))
       .finally(() => setLoadData(false));
@@ -61,7 +73,18 @@ export default function InputDataPengajuan() {
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => v && fd.append(k, v));
-      if (fotoSelfie) fd.append('foto_selfie', fotoSelfie);
+
+      // Append field aliases for backend compatibility
+      if (form.no_hp) fd.append('nomor_hp', form.no_hp);
+      if (form.tempat_tgl_lahir) fd.append('ttl', form.tempat_tgl_lahir);
+      if (form.plafond) fd.append('nominal_pengajuan', form.plafond);
+      if (form.tenor) fd.append('jangka_waktu', form.tenor);
+      if (form.suku_bunga_annuitas) fd.append('bunga', form.suku_bunga_annuitas);
+
+      if (fotoSelfie) {
+        fd.append('foto_selfie', fotoSelfie);
+        fd.append('foto', fotoSelfie);
+      }
       if (editId) {
         await updatePengajuan(editId, fd);
       } else {
